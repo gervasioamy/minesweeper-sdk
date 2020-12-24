@@ -3,7 +3,7 @@ Author: Gervasio Amy
 
 ### Run it
 ```
-go run main.go
+go run sdk-demo.go
 ```
 
 ### Implementation details
