@@ -35,19 +35,19 @@ type SDK struct {
 }
 
 // Init _
-func initSDK(host string) {
+func initSDK(host string, verbose bool) {
 	log.Info("Initializing SDK...")
 	_sdk := new(SDK)
 	_sdk.client = resty.New()
-	_sdk.client.SetDebug(true)
+	_sdk.client.SetDebug(verbose)
 	_sdk.client.SetHostURL(host)
 	instance = _sdk
 }
 
 // Initialize _
-func Initialize(host string) {
+func Initialize(host string, verbose bool) {
 	once.Do(func() {
-		initSDK(host)
+		initSDK(host, verbose)
 	})
 }
 
