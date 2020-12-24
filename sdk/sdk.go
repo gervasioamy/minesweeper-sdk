@@ -81,7 +81,7 @@ func (sdk *SDK) CreateGame(rows, cols, mines int, player string) (string, error)
 		// bad request
 		resErrBody := resp.Error().(*response.Basic4xxResponse)
 		log.Warnf("400 when creating a game: %s", resErrBody.Message)
-		return "", errors.New("Bad Request")
+		return "", &MinesweeperError{resErrBody.ErrorCode, resErrBody.Message}
 	}
 	return "", nil
 }
@@ -158,15 +158,15 @@ func (sdk *SDK) FlagCell(gameID string, row, col int) (bool, error) {
 	}
 	if resp.StatusCode() == 400 {
 		// bad request
-		resErrBody := resp.Error().(response.Basic4xxResponse)
+		resErrBody := resp.Error().(*response.Basic4xxResponse)
 		log.Warnf("400 when falgging a cell (%v, %v): %v", row, col, resErrBody.Message)
-		return false, errors.New("Bad Request")
+		return false, &MinesweeperError{resErrBody.ErrorCode, resErrBody.Message}
 	}
 	if resp.StatusCode() == 404 {
 		// bad request
 		resErrBody := resp.Error().(*response.Basic4xxResponse)
 		log.Warnf("404 when falgging a cell: %v", resErrBody.Message)
-		return false, errors.New("Game Not Found")
+		return false, &MinesweeperError{resErrBody.ErrorCode, resErrBody.Message}
 	}
 	return false, nil
 }
@@ -200,25 +200,23 @@ func (sdk *SDK) UnflagCell(gameID string, row, col int) (bool, error) {
 	}
 	if resp.StatusCode() == 400 {
 		// bad request
-		resErrBody := resp.Error().(response.Basic4xxResponse)
+		resErrBody := resp.Error().(*response.Basic4xxResponse)
 		log.Warnf("400 when unfalgging a cell (%v, %v): %v", row, col, resErrBody.Message)
-		return false, errors.New("Bad Request")
+		return false, &MinesweeperError{resErrBody.ErrorCode, resErrBody.Message}
 	}
 	if resp.StatusCode() == 404 {
 		// bad request
 		resErrBody := resp.Error().(*response.Basic4xxResponse)
 		log.Warnf("404 when unfalgging a cell: %v", resErrBody.Message)
-		return false, errors.New("Game Not Found")
+		return false, &MinesweeperError{resErrBody.ErrorCode, resErrBody.Message}
 	}
 	return false, nil
 }
 
-// Pause calls POST api/games{gameID}/pause and returns true if cell was paused ok or an error if call failed
+// Pause calls POST api/games{gameID}/pause and returns true if game was paused ok or an error if call failed
 func (sdk *SDK) Pause(gameID string) (bool, error) {
 	// call the endpoint
 	resp, err := sdk.client.SetDebug(true).R().
-		//SetHeader("Content-Type", "application/json").
-		//SetResult(&response.DiscoverCellResponse{}).
 		SetError(&response.Basic4xxResponse{}).
 		SetPathParams(map[string]string{
 			"gameId": gameID,
@@ -236,20 +234,20 @@ func (sdk *SDK) Pause(gameID string) (bool, error) {
 	}
 	if resp.StatusCode() == 400 {
 		// bad request, game already paused
-		resErrBody := resp.Error().(response.Basic4xxResponse)
+		resErrBody := resp.Error().(*response.Basic4xxResponse)
 		log.Warnf("400 when pause a game: %v", resErrBody.Message)
-		return false, errors.New("Bad Request")
+		return false, &MinesweeperError{resErrBody.ErrorCode, resErrBody.Message}
 	}
 	if resp.StatusCode() == 404 {
 		// bad request
 		resErrBody := resp.Error().(*response.Basic4xxResponse)
 		log.Warnf("404 when pause a game: %v", resErrBody.Message)
-		return false, errors.New("Game Not Found")
+		return false, &MinesweeperError{resErrBody.ErrorCode, resErrBody.Message}
 	}
 	return false, nil
 }
 
-// Pause calls POST api/games{gameID}/pause and returns true if cell was paused ok or an error if call failed
+// Resume calls DELETE api/games{gameID}/pause and returns true if game was resumed ok or an error if call failed
 func (sdk *SDK) Resume(gameID string) (bool, error) {
 	// call the endpoint
 	resp, err := sdk.client.SetDebug(true).R().
@@ -272,13 +270,13 @@ func (sdk *SDK) Resume(gameID string) (bool, error) {
 		// bad request, game not paused
 		resErrBody := resp.Error().(response.Basic4xxResponse)
 		log.Warnf("400 when resumed a game: %v", resErrBody.Message)
-		return false, errors.New("Bad Request")
+		return false, &MinesweeperError{resErrBody.ErrorCode, resErrBody.Message}
 	}
 	if resp.StatusCode() == 404 {
-		// bad request
 		resErrBody := resp.Error().(*response.Basic4xxResponse)
 		log.Warnf("404 when resumed a game: %v", resErrBody.Message)
-		return false, errors.New("Game Not Found")
+		//return false, errors.New("Game Not Found")
+		return false, &MinesweeperError{resErrBody.ErrorCode, resErrBody.Message}
 	}
 	return false, nil
 }
