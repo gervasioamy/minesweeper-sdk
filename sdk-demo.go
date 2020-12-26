@@ -9,7 +9,8 @@ import (
 
 var client *sdk.SDK
 
-const host string = "http://localhost:8080/api/"
+//const host string = "http://localhost:8080/api/"
+const host string = "https://gamy-minesweeper-api.herokuapp.com/api/"
 
 func main() {
 	log.Print("Starting  SDK test ...")
