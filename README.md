@@ -1,10 +1,11 @@
 # minesweeper-sdk
 Author: Gervasio Amy
 
-### Run it
+### Run a demo of the SDK usage
 ```
 go run sdk-demo.go
 ```
+_It will use the deployed minesweeper-api at `https://gamy-minesweeper-api.herokuapp.com/api/`_
 
 ### Implementation details
 A simple SDK to call [minesweeper-api](https://github.com/gervasioamy/minesweeper-api) endpoints was developed besed on [Resty](https://github.com/go-resty/resty), a simple http client library.
